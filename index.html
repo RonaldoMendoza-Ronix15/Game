@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💝 Una Pregunta Especial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Pantalla de Inicio */
+        #startScreen {
+            text-align: center;
+            color: white;
+            animation: fadeIn 1s ease-in;
+        }
+
+        #startScreen h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        #startScreen p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        #startBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        #startBtn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.6);
+        }
+
+        /* Área del Juego */
+        #gameContainer {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            height: 100%;
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            z-index: 10;
+            line-height: 1.4;
+        }
+
+        #instructions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 1rem;
+            text-align: right;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        /* Pantalla Final */
+        #finalScreen {
+            display: none;
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 100;
+        }
+
+        #finalScreen h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: heartBeat 1.5s ease-in-out infinite;
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+        }
+
+        #finalScreen p {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-in;
+            line-height: 1.6;
+        }
+
+        .heart-emoji {
+            font-size: 3rem;
+            display: inline-block;
+            animation: bounce 1s infinite;
+        }
+
+        /* Botones de respuesta */
+        .answer-buttons {
+            margin-top: 3rem;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.8rem;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.6);
+        }
+
+        .answer-btn.no {
+            background: linear-gradient(135deg, #a8b5d1 0%, #7f8fa6 100%);
+            font-size: 1rem;
+            padding: 10px 30px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f5576c;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #startScreen h1 { font-size: 2.5rem; }
+            #startScreen p { font-size: 1.1rem; }
+            #startBtn { padding: 15px 40px; font-size: 1.2rem; }
+            #finalScreen h1 { font-size: 2.5rem; }
+            #finalScreen p { font-size: 1.3rem; }
+            .answer-btn { 
+                padding: 15px 40px; 
+                font-size: 1.3rem;
+            }
+            .answer-btn.no {
+                font-size: 1rem;
+                padding: 10px 25px;
+            }
+            #score { 
+                font-size: 1.3rem;
+                top: 10px;
+                left: 10px;
+            }
+            #instructions { 
+                font-size: 0.8rem;
+                top: 10px;
+                right: 10px;
+            }
+            .answer-buttons {
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Inicio -->
+    <div id="startScreen">
+        <h1>💝 ¡Hola mi amor! 💝</h1>
+        <p>He preparado algo especial para ti preciosa...</p>
+        <p>Completa este pequeño minijuego para descubrirlo</p>
+        <button id="startBtn">¡Comenzar!</button>
+    </div>
+
+    <!-- Área del Juego -->
+    <div id="gameContainer">
+        <div id="score">
+            💖 Puntos: 0<br>
+            ❤️ Vidas: 3
+        </div>
+        <div id="instructions">
+            🎮 <strong>Controles:</strong><br>
+            ⌨️ PC: Flechas ← →<br>
+            📱 Celular: Toca y arrastra<br>
+            🎯 Meta: 500 puntos<br>
+            💛 +25 pts | 💚 +1 vida
+        </div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div id="finalScreen">
+        <h1>¡Lo lograste! 🎉</h1>
+        <p>Se agradece que hayas jugado con tanto entusiasmo jsjsjs,</p>
+        <p>ahora si a lo importante mi amor...</p>
+        <p><span class="heart-emoji">💕</span></p>
+        <p style="font-size: 2.5rem; font-family: 'Pacifico', cursive; margin-top: 2rem;">
+            ¿Quieres ser mi Valentine?
+        </p>
+        <div class="answer-buttons">
+            <button class="answer-btn" onclick="handleYes()">¡SÍ! 💝</button>
+            <button class="answer-btn no" onclick="handleNo()" onmouseover="moveNoButton()" ontouchstart="moveNoButton()" id="noBtn">No...</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables del juego
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const gameContainer = document.getElementById('gameContainer');
+        const finalScreen = document.getElementById('finalScreen');
+        const scoreElement = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+
+        // Configuración del canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Variables del jugador
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height - 100,
+            width: 50,
+            height: 50,
+            speed: 7,
+            dx: 0,
+            targetX: canvas.width / 2
+        };
+
+        // Variables del juego
+        let obstacles = [];
+        let hearts = [];
+        let lifePowerUps = [];
+        let score = 0;
+        let lives = 3;
+        let gameRunning = false;
+        let gameFrame = 0;
+        let obstacleSpeed = 2;
+        let isInvincible = false;
+        let invincibleFrames = 0;
+
+        // Control de teclas
+        let keys = {
+            left: false,
+            right: false
+        };
+
+        // Event Listeners
+        startBtn.addEventListener('click', startGame);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') keys.left = true;
+            if (e.key === 'ArrowRight') keys.right = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') keys.left = false;
+            if (e.key === 'ArrowRight') keys.right = false;
+        });
+
+        // Control táctil para móviles - mejorado
+        let touchStartX = 0;
+        let isTouching = false;
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            isTouching = true;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isTouching) return;
+            
+            const touchX = e.touches[0].clientX;
+            player.targetX = touchX - player.width / 2;
+            
+            // Mantener dentro de los límites
+            player.targetX = Math.max(0, Math.min(canvas.width - player.width, player.targetX));
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isTouching = false;
+            keys.left = false;
+            keys.right = false;
+        });
+
+        // Resize canvas
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 100;
+        });
+
+        // Iniciar juego
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+            gameRunning = true;
+            score = 0;
+            lives = 3;
+            obstacles = [];
+            hearts = [];
+            lifePowerUps = [];
+            gameFrame = 0;
+            obstacleSpeed = 2;  // Velocidad inicial más lenta
+            player.x = canvas.width / 2;
+            player.targetX = canvas.width / 2;
+            isInvincible = false;
+            invincibleFrames = 0;
+            updateScoreDisplay();
+            gameLoop();
+        }
+
+        // Crear obstáculos
+        function createObstacle() {
+            const size = Math.random() * 40 + 30;
+            obstacles.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                speed: obstacleSpeed,
+                color: `hsl(${Math.random() * 60 + 320}, 80%, 60%)`
+            });
+        }
+
+        // Crear corazones (bonus)
+        function createHeart() {
+            hearts.push({
+                x: Math.random() * (canvas.width - 30),
+                y: -30,
+                size: 30,
+                speed: obstacleSpeed - 1
+            });
+        }
+
+        // Crear power-up de vida extra
+        function createLifePowerUp() {
+            lifePowerUps.push({
+                x: Math.random() * (canvas.width - 35),
+                y: -35,
+                size: 35,
+                speed: obstacleSpeed - 0.5
+            });
+        }
+
+        // Actualizar display de puntos y vidas
+        function updateScoreDisplay() {
+            const heartsDisplay = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+            scoreElement.innerHTML = `💖 Puntos: ${score}<br>${heartsDisplay} Vidas: ${lives}`;
+        }
+
+        // Dibujar jugador (corazón)
+        function drawPlayer() {
+            // Efecto de parpadeo cuando es invencible
+            if (isInvincible && gameFrame % 10 < 5) {
+                return; // No dibujar para crear efecto de parpadeo
+            }
+            
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            
+            // Corazón rosa brillante
+            ctx.fillStyle = isInvincible ? '#00ffff' : '#ff69b4';
+            ctx.shadowColor = isInvincible ? '#00ffff' : '#ff1493';
+            ctx.shadowBlur = 20;
+            
+            const scale = player.width / 50;
+            ctx.scale(scale, scale);
+            
+            ctx.beginPath();
+            ctx.moveTo(25, 35);
+            ctx.bezierCurveTo(25, 27, 15, 15, 0, 15);
+            ctx.bezierCurveTo(-15, 15, -25, 27, -25, 35);
+            ctx.bezierCurveTo(-25, 50, 0, 62, 25, 75);
+            ctx.bezierCurveTo(50, 62, 75, 50, 75, 35);
+            ctx.bezierCurveTo(75, 27, 65, 15, 50, 15);
+            ctx.bezierCurveTo(35, 15, 25, 27, 25, 35);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // Dibujar obstáculos
+        function drawObstacles() {
+            obstacles.forEach(obs => {
+                ctx.fillStyle = obs.color;
+                ctx.shadowColor = obs.color;
+                ctx.shadowBlur = 15;
+                
+                // Cuadrado rotado (diamante)
+                ctx.save();
+                ctx.translate(obs.x + obs.width/2, obs.y + obs.height/2);
+                ctx.rotate(gameFrame * 0.05);
+                ctx.fillRect(-obs.width/2, -obs.height/2, obs.width, obs.height);
+                ctx.restore();
+            });
+        }
+
+        // Dibujar corazones bonus
+        function drawHearts() {
+            hearts.forEach(heart => {
+                ctx.save();
+                ctx.translate(heart.x, heart.y);
+                ctx.fillStyle = '#ffd700';
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 15;
+                
+                const scale = heart.size / 50;
+                ctx.scale(scale, scale);
+                
+                ctx.beginPath();
+                ctx.moveTo(25, 35);
+                ctx.bezierCurveTo(25, 27, 15, 15, 0, 15);
+                ctx.bezierCurveTo(-15, 15, -25, 27, -25, 35);
+                ctx.bezierCurveTo(-25, 50, 0, 62, 25, 75);
+                ctx.bezierCurveTo(50, 62, 75, 50, 75, 35);
+                ctx.bezierCurveTo(75, 27, 65, 15, 50, 15);
+                ctx.bezierCurveTo(35, 15, 25, 27, 25, 35);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.restore();
+            });
+        }
+
+        // Dibujar power-ups de vida
+        function drawLifePowerUps() {
+            lifePowerUps.forEach(powerUp => {
+                ctx.save();
+                ctx.translate(powerUp.x, powerUp.y);
+                ctx.fillStyle = '#00ff00';
+                ctx.shadowColor = '#00ff00';
+                ctx.shadowBlur = 20;
+                
+                const scale = powerUp.size / 50;
+                ctx.scale(scale, scale);
+                
+                // Corazón verde
+                ctx.beginPath();
+                ctx.moveTo(25, 35);
+                ctx.bezierCurveTo(25, 27, 15, 15, 0, 15);
+                ctx.bezierCurveTo(-15, 15, -25, 27, -25, 35);
+                ctx.bezierCurveTo(-25, 50, 0, 62, 25, 75);
+                ctx.bezierCurveTo(50, 62, 75, 50, 75, 35);
+                ctx.bezierCurveTo(75, 27, 65, 15, 50, 15);
+                ctx.bezierCurveTo(35, 15, 25, 27, 25, 35);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Cruz blanca
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(20, 30, 10, 30);
+                ctx.fillRect(10, 40, 30, 10);
+                
+                ctx.restore();
+            });
+        }
+
+        // Actualizar posiciones
+        function update() {
+            // Actualizar invencibilidad
+            if (isInvincible) {
+                invincibleFrames--;
+                if (invincibleFrames <= 0) {
+                    isInvincible = false;
+                }
+            }
+            
+            // Mover jugador con movimiento suave
+            if (isTouching) {
+                // En móvil, usar movimiento directo pero suave
+                const diffX = player.targetX - player.x;
+                player.x += diffX * 0.2; // Interpolación suave
+            } else {
+                // En teclado, movimiento tradicional
+                if (keys.left && player.x > 0) {
+                    player.x -= player.speed;
+                }
+                if (keys.right && player.x < canvas.width - player.width) {
+                    player.x += player.speed;
+                }
+            }
+
+            // Asegurar que el jugador no salga de los límites
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+
+            // Mover obstáculos
+            obstacles.forEach((obs, index) => {
+                obs.y += obs.speed;
+                
+                // Eliminar obstáculos fuera de pantalla
+                if (obs.y > canvas.height) {
+                    obstacles.splice(index, 1);
+                    score += 10;
+                    updateScoreDisplay();
+                    
+                    // Aumentar dificultad gradualmente (más controlado)
+                    if (score % 100 === 0 && obstacleSpeed < 5) {
+                        obstacleSpeed += 0.5;
+                    }
+                }
+                
+                // Detectar colisión solo si no es invencible
+                if (!isInvincible && checkCollision(player, obs)) {
+                    loseLife();
+                    obstacles.splice(index, 1); // Eliminar obstáculo que causó colisión
+                }
+            });
+
+            // Mover corazones
+            hearts.forEach((heart, index) => {
+                heart.y += heart.speed;
+                
+                // Eliminar corazones fuera de pantalla
+                if (heart.y > canvas.height) {
+                    hearts.splice(index, 1);
+                }
+                
+                // Detectar captura de corazón
+                if (checkHeartCollision(player, heart)) {
+                    hearts.splice(index, 1);
+                    score += 25;
+                    updateScoreDisplay();
+                    createSmallConfetti(player.x + player.width/2, player.y); // Efecto visual al capturar
+                }
+            });
+
+            // Mover power-ups de vida
+            lifePowerUps.forEach((powerUp, index) => {
+                powerUp.y += powerUp.speed;
+                
+                // Eliminar power-ups fuera de pantalla
+                if (powerUp.y > canvas.height) {
+                    lifePowerUps.splice(index, 1);
+                }
+                
+                // Detectar captura de power-up
+                if (checkHeartCollision(player, powerUp)) {
+                    lifePowerUps.splice(index, 1);
+                    if (lives < 3) {
+                        lives++;
+                        updateScoreDisplay();
+                        createSmallConfetti(player.x + player.width/2, player.y);
+                    } else {
+                        // Si ya tiene 3 vidas, dar puntos bonus
+                        score += 50;
+                        updateScoreDisplay();
+                        createSmallConfetti(player.x + player.width/2, player.y);
+                    }
+                }
+            });
+
+            // Crear nuevos obstáculos (más espaciados)
+            if (gameFrame % 70 === 0) {
+                createObstacle();
+            }
+
+            // Crear corazones bonus ocasionalmente
+            if (gameFrame % 200 === 0) {
+                createHeart();
+            }
+
+            // Crear power-up de vida ocasionalmente (más raro)
+            if (gameFrame % 350 === 0 && lives < 3) {
+                createLifePowerUp();
+            }
+
+            gameFrame++;
+
+            // Ganar al alcanzar 500 puntos
+            if (score >= 500) {
+                winGame();
+            }
+        }
+
+        // Verificar colisión con obstáculos
+        function checkCollision(player, obstacle) {
+            return player.x < obstacle.x + obstacle.width &&
+                   player.x + player.width > obstacle.x &&
+                   player.y < obstacle.y + obstacle.height &&
+                   player.y + player.height > obstacle.y;
+        }
+
+        // Verificar colisión con corazones
+        function checkHeartCollision(player, heart) {
+            const distance = Math.sqrt(
+                Math.pow(player.x + player.width/2 - heart.x, 2) +
+                Math.pow(player.y + player.height/2 - heart.y, 2)
+            );
+            return distance < (player.width/2 + heart.size/2);
+        }
+
+        // Perder vida
+        function loseLife() {
+            lives--;
+            updateScoreDisplay();
+            
+            // Efecto visual de colisión
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+            
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                // Activar invencibilidad temporal (2 segundos)
+                isInvincible = true;
+                invincibleFrames = 120; // 2 segundos a 60fps
+            }
+        }
+
+        // Game Over
+        function gameOver() {
+            gameRunning = false;
+            setTimeout(() => {
+                if (confirm('¡El amor nunca se rinde! 💕 ¿Quieres intentarlo de nuevo?')) {
+                    startGame();
+                } else {
+                    gameContainer.style.display = 'none';
+                    startScreen.style.display = 'block';
+                }
+            }, 100);
+        }
+
+        // Ganar
+        function winGame() {
+            gameRunning = false;
+            gameContainer.style.display = 'none';
+            finalScreen.style.display = 'block';
+            finalScreen.style.animation = 'fadeIn 1s ease-in';
+            createConfetti();
+        }
+
+        // Crear confetti optimizado (menos cantidad, mejor performance)
+        let confettiElements = [];
+        
+        function createConfetti() {
+            // Limpiar confetti anterior si existe
+            confettiElements.forEach(el => el.remove());
+            confettiElements = [];
+            
+            // Reducido a 50 elementos (antes 100)
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = Math.random() * 1.5 + 2.5 + 's';
+                    document.body.appendChild(confetti);
+                    confettiElements.push(confetti);
+                    
+                    // Eliminar después de la animación
+                    setTimeout(() => {
+                        confetti.remove();
+                        const index = confettiElements.indexOf(confetti);
+                        if (index > -1) confettiElements.splice(index, 1);
+                    }, 5000);
+                }, i * 20);
+            }
+        }
+        
+        // Confetti pequeño al capturar corazones
+        function createSmallConfetti(x, y) {
+            for (let i = 0; i < 5; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = (x / window.innerWidth * 100) + '%';
+                confetti.style.background = '#ffd700';
+                confetti.style.width = '6px';
+                confetti.style.height = '6px';
+                confetti.style.animationDuration = '1s';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 1000);
+            }
+        }
+
+        // Loop del juego
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar fondo con estrellas
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < 50; i++) {
+                const x = (Math.sin(gameFrame * 0.01 + i) * canvas.width/2) + canvas.width/2;
+                const y = ((gameFrame * 2 + i * 50) % canvas.height);
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            drawObstacles();
+            drawHearts();
+            drawLifePowerUps();
+            drawPlayer();
+            update();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Respuestas
+        let noClickCount = 0;
+        function handleYes() {
+            finalScreen.innerHTML = `
+                <h1 style="font-size: 5rem;">¡WAAAAAAAAAA!</h1>
+                <p style="font-size: 2rem; margin-top: 2rem;">
+                    ¡Sabía que dirías que sí <3!
+                </p>
+                <p style="font-size: 2rem; margin-top: 2rem;">
+                    Tq muchito corazón
+                </p>
+                <p style="font-size: 1.5rem; margin-top: 1rem;">
+                    💕¡Eres mi Valentine perfecta!💕
+                </p>
+                <p class="heart-emoji" style="font-size: 5rem; margin-top: 2rem;">❤️</p>
+            `;
+            
+            // Confetti optimizado - solo 3 oleadas
+            createConfetti();
+            setTimeout(() => createConfetti(), 1000);
+            setTimeout(() => createConfetti(), 2000);
+        }
+
+        function handleNo() {
+            noClickCount++;
+            const noBtn = document.getElementById('noBtn');
+            
+            if (noClickCount === 1) {
+                noBtn.textContent = '¿Segura? 🥺';
+                noBtn.style.fontSize = '0.8rem';
+                noBtn.style.padding = '8px 20px';
+            } else if (noClickCount === 2) {
+                noBtn.textContent = '¿De verdad? 😢';
+                noBtn.style.fontSize = '0.6rem';
+                noBtn.style.padding = '5px 15px';
+            } else if (noClickCount === 3) {
+                noBtn.textContent = 'Piénsalo mejor 💔';
+                noBtn.style.fontSize = '0.5rem';
+                noBtn.style.padding = '3px 10px';
+            } else {
+                // Hacer que el botón se mueva aleatoriamente
+                noBtn.textContent = '¡No puedes! 😝';
+                noBtn.style.position = 'fixed';
+                noBtn.style.fontSize = '0.4rem';
+                noBtn.style.padding = '2px 8px';
+                
+                // No hacer nada más - el botón ahora se moverá con el evento mouseover
+            }
+        }
+
+        // Agregar evento para mover el botón cuando intenten hacer hover
+        document.addEventListener('DOMContentLoaded', function() {
+            // Este evento se agregará dinámicamente cuando se muestre la pantalla final
+        });
+
+        // Función para mover el botón No aleatoriamente
+        function moveNoButton() {
+            const noBtn = document.getElementById('noBtn');
+            if (!noBtn || noClickCount < 4) return;
+            
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transition = 'all 0.3s ease';
+        }
+    </script>
+</body>
+</html>
